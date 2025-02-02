@@ -3,6 +3,7 @@ package com.alan.basictrainingflightsearch.ui
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +44,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
-@Composable
+/*@Composable
 fun FlightSearchScreen() {
     Scaffold(
         topBar = {
@@ -54,37 +55,15 @@ fun FlightSearchScreen() {
             contentPadding = innerPadding
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FlightTopBar(
-    modifier: Modifier = Modifier
-) {
-    CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(R.string.app_name)) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-        ),
-        scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-        modifier = modifier,
-
-    )
-}
+}*/
 
 @Composable
 fun FlightSearchBody(
+    onAirportClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     viewModel : FlightSearchViewModel = viewModel(factory = AppViewModelProvider.factory)
 ) {
-    /*var searchTerm by remember {
-        mutableStateOf("");
-    }*/
-
-    //val airports by viewModel.searchForAirport().collectAsState(emptyList())
-    //val
     val searchTerm by viewModel.searchTerm.collectAsState()
     val airports by viewModel.airports.collectAsState(emptyList())
 
@@ -126,6 +105,7 @@ fun FlightSearchBody(
             ) {
                 AirportCard(
                     airport = it,
+                    onAirportClick = onAirportClick
                 )
             }
         }
@@ -135,10 +115,13 @@ fun FlightSearchBody(
 @Composable
 fun AirportCard(
     airport: Airport,
+    onAirportClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth().clickable {
+            onAirportClick(airport.id)
+        }
     ) {
         Column(
             modifier = Modifier.padding(all = 16.dp)
