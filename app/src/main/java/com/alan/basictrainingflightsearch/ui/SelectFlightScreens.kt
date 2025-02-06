@@ -57,7 +57,13 @@ fun SelectFlightScreen(
             )
         )
 
-    val airports by viewModel.getAirportsExcept(exceptIdAirportId = airport.id).collectAsState(emptyList())
+    val airports by viewModel
+        .getAirportsExcept(exceptIdAirportId = airport.id)
+        .collectAsState(emptyList())
+
+    val airportFavorites by viewModel
+        .getFavoritesWithDeparture(code = airport.iataCode)
+        .collectAsState(emptyList())
 
     Column(
         modifier = Modifier.padding(contentPadding),
@@ -79,11 +85,17 @@ fun SelectFlightScreen(
             items(
                 items = airports,
                 key = { airport -> airport.id }
-            ) {
+            ) { destination ->
                 FlightCard(
                     airportDeparture = airport,
-                    airportDestination = it,
-                    onFlightClick = {},
+                    airportDestination = destination,
+                    onFlightClick = {
+                        viewModel.toggleFavoriteByDepartureAirport(
+                            departureAirport = airport,
+                            destinationAirport = destination
+                        )
+                    },
+                    isFavorite = (airportFavorites.find { favorite -> favorite.departureCode == airport.iataCode && favorite.destinationCode == destination.iataCode } != null)
                 )
             }
         }
