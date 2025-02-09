@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alan.basictrainingflightsearch.data.Airport
 import com.alan.basictrainingflightsearch.ui.theme.BasicTrainingFlightSearchTheme
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 @Composable
 fun SelectFlightScreen(
@@ -65,6 +67,8 @@ fun SelectFlightScreen(
         .getFavoritesWithDeparture(code = airport.iataCode)
         .collectAsState(emptyList())
 
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier.padding(contentPadding),
         //horizontalAlignment = Alignment.CenterHorizontally,
@@ -90,10 +94,12 @@ fun SelectFlightScreen(
                     airportDeparture = airport,
                     airportDestination = destination,
                     onFlightClick = {
-                        viewModel.toggleFavoriteByDepartureAirport(
-                            departureAirport = airport,
-                            destinationAirport = destination
-                        )
+                        coroutineScope.launch {
+                            viewModel.toggleFavoriteByDepartureAirport(
+                                departureAirport = airport,
+                                destinationAirport = destination
+                            )
+                        }
                     },
                     isFavorite = (airportFavorites.find { favorite -> favorite.departureCode == airport.iataCode && favorite.destinationCode == destination.iataCode } != null)
                 )

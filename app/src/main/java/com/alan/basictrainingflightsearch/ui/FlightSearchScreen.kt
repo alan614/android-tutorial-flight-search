@@ -66,9 +66,12 @@ fun FlightSearchBody(
 ) {
     val searchTerm by viewModel.searchTerm.collectAsState()
     val airports by viewModel.airports.collectAsState(emptyList())
+    //val favorites by viewModel.favorites.collectAsState(emptyList())
+    val favoritesState by viewModel.favoritesState.collectAsState()
 
     Column(
-        modifier = modifier.padding(contentPadding)
+        modifier = modifier
+            .padding(contentPadding)
             .fillMaxWidth()
             //.border(width = 8.dp, color = MaterialTheme.colorScheme.primaryContainer, shape = ShapeDefaults.Medium)
     ) {
@@ -81,33 +84,78 @@ fun FlightSearchBody(
                 //airports = viewModel.searchForAirport()
             },
             label = { Text("Search for flight name") },
-            modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+            modifier = Modifier
+                .align(alignment = Alignment.CenterHorizontally)
                 .padding(all = 8.dp),
         )
 
-        /*val airports: List<Airport> = listOf(
-            Airport(id = 1, iataCode = "abc", name = "ABC", passengers = 42),
-            Airport(id = 2, iataCode = "def", name = "DEF", passengers = 15),
-            Airport(id = 3, iataCode = "ha1", name = "Hello", passengers = 30),
-            Airport(id = 4, iataCode = "ha2", name = "How Are you", passengers = 13),
-            Airport(id = 5, iataCode = "ha3", name = "Quite well", passengers = 50),
-        )*/
+        /*if (searchTerm != "") {
+            AirportList(
+                viewModel = viewModel,
+                onAirportClick = onAirportClick,
+            )
+        } else {
+            FavoriteList(
+                viewModel = viewModel,
+            )
+        }*/
 
-
-
-        LazyColumn(
-            contentPadding = PaddingValues(all = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items (
-                items = airports,
-                key = { airport -> airport.id }
-            ) {
-                AirportCard(
-                    airport = it,
-                    onAirportClick = onAirportClick
-                )
+        if (searchTerm == "") {
+            Text("listing favorites")
+            LazyColumn {
+                items (
+                    items = favoritesState.favoritesList,
+                    key = {favorite -> favorite.id}
+                ) { favorite ->
+                    Text("Favorite")
+                    //Row {
+                        Text(text = "${favorite.departureCode} - ${favorite.destinationCode}")
+                    //}
+                }
             }
+        } else {
+            /*LazyColumn(
+                contentPadding = PaddingValues(all = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items (
+                    items = airports,
+                    key = { airport -> airport.id }
+                ) {
+                    AirportCard(
+                        airport = it,
+                        onAirportClick = onAirportClick
+                    )
+                }
+            }*/
+            AirportList(
+                airports = airports,
+                onAirportClick = onAirportClick
+            )
+        }
+    }
+}
+
+@Composable
+fun AirportList(
+    airports: List<Airport>,
+    onAirportClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    //val airports by viewModel.airports.collectAsState(emptyList())
+
+    LazyColumn(
+        contentPadding = PaddingValues(all = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items (
+            items = airports,
+            key = { airport -> airport.id }
+        ) {
+            AirportCard(
+                airport = it,
+                onAirportClick = onAirportClick
+            )
         }
     }
 }
@@ -119,9 +167,11 @@ fun AirportCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().clickable {
-            onAirportClick(airport.id)
-        }
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                onAirportClick(airport.id)
+            }
     ) {
         Column(
             modifier = Modifier.padding(all = 16.dp)
@@ -143,3 +193,25 @@ fun AirportCard(
         }*/
     }
 }
+/*
+
+@Composable
+fun FavoriteList(
+    //viewModel: FlightSearchViewModel,
+    modifier: Modifier = Modifier,
+) {
+
+    val airportFavorites by viewModel
+        .getFavorites()
+        .collectAsState(emptyList())
+
+    val iataCodes = mutableListOf<String>()
+
+    airportFavorites.forEach {
+        iataCodes.add(it.departureCode)
+        iataCodes.add(it.destinationCode)
+    }
+
+    Log.d("FAVORITES", iataCodes.size.toString())
+}
+*/

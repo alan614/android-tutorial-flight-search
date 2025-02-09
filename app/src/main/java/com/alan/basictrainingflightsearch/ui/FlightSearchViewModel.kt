@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -42,17 +43,30 @@ class FlightSearchViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val airports = searchTerm
-        .debounce(timeoutMillis = 1_000)
+        .debounce(timeoutMillis = 1_000L)
         .distinctUntilChanged()
         .flatMapLatest {
             searchForAirport(it)
         }
-
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
     //var searchTerm by mutableStateOf("")
 
     /*fun updateSearchTerms(terms: String) {
         searchTerm = terms
     }*/
+
+    val favoritesState: StateFlow<FavoritesState> = favoriteRepository
+        .getAllFavoritesStream()
+        .map { FavoritesState(it) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = FavoritesState()
+        )
 
     fun getAirport(id: Int) : Flow<Airport> = airportRepository.getAirportStream(id = id)
 
@@ -65,7 +79,12 @@ class FlightSearchViewModel(
     }
 
     private fun searchForAirport(searchString: String) : Flow<List<Airport>> {
-        return airportRepository.searchAirportStream("%${searchString}%")
+        val queryTerm: String = if (searchString == "") {
+            ""
+        } else {
+            "%${searchString}%"
+        }
+        return airportRepository.searchAirportStream(queryTerm)
     }
 
     fun getAirportsExcept(exceptIdAirportId: Int) : Flow<List<Airport>> = airportRepository.getAllAirportsExceptStream(exceptAirportId = exceptIdAirportId)
@@ -78,35 +97,35 @@ class FlightSearchViewModel(
         return favoriteRepository.getAllFavoritesByDepartureCode(code = code)
     }
 
-    fun addFavoriteByAirports(departureAirport: Airport, destinationAirport: Airport) {
-        viewModelScope.launch {
+    suspend fun addFavoriteByAirports(departureAirport: Airport, destinationAirport: Airport) {
+        Log.d("FAVORITE_ADD", "${departureAirport.iataCode} - ${destinationAirport.iataCode}")
+        //viewModelScope.launch {
             val favorite = Favorite(
                 id = 0,
                 departureCode = departureAirport.iataCode,
                 destinationCode = destinationAirport.iataCode
             )
             favoriteRepository.insertFavorite(favorite)
-        }
+        //}
     }
 
-    fun removeFavorite(favorite: Favorite) {
-        viewModelScope.launch {
+    suspend fun removeFavorite(favorite: Favorite) {
+        //viewModelScope.launch {
             favoriteRepository.deleteFavorite(favorite)
-        }
+        //}
     }
 
-    fun toggleFavoriteByDepartureAirport(departureAirport: Airport, destinationAirport: Airport) {
-        viewModelScope.launch {
+    suspend fun toggleFavoriteByDepartureAirport(departureAirport: Airport, destinationAirport: Airport) {
             val favorite = favoriteRepository
                 .getFavoriteByDepartureAndDestinationCodeStream(departureCode = departureAirport.iataCode, destinationCode = destinationAirport.iataCode)
-                ?.stateIn(viewModelScope)
+                ?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
                 ?.value
+
             if (favorite == null) {
                 addFavoriteByAirports(departureAirport = departureAirport, destinationAirport = destinationAirport)
             } else {
                 removeFavorite(favorite)
             }
-        }
     }
 }
 
@@ -114,4 +133,9 @@ class FlightSearchViewModel(
 data class UiState(
     //val searchTerm: String = "",
     val currentAirportId: Int = 0,
+    val favoritesList: List<Favorite> = listOf()
+)
+
+data class FavoritesState(
+    val favoritesList: List<Favorite> = emptyList()
 )
