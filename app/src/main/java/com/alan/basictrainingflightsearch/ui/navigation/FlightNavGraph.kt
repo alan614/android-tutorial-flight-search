@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.alan.basictrainingflightsearch.ui.FlightSelectDestination
+import com.alan.basictrainingflightsearch.ui.FlightSelectScreen
 import com.alan.basictrainingflightsearch.ui.HomeDestination
 import com.alan.basictrainingflightsearch.ui.HomeScreen
 
@@ -37,7 +38,7 @@ fun FlightNavGraph(
                 type = NavType.IntType
             })
         ) {
-            Text("testing")
+            FlightSelectScreen()
         }
     }
 }

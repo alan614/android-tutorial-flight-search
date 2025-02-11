@@ -10,12 +10,15 @@ import com.alan.basictrainingflightsearch.FlightSearchApplication
 object AppViewModelProvider {
     val factory = viewModelFactory {
         initializer {
-            FlightSearchViewModel(
-                flightSearchApplication().container.airportRepository,
-                flightSearchApplication().container.favoriteRepository,
-            )
-
             HomeViewModel(
+                savedStateHandle = this.createSavedStateHandle(),
+                airportRepository = flightSearchApplication().container.airportRepository,
+                favoriteRepository = flightSearchApplication().container.favoriteRepository,
+            )
+        }
+
+        initializer {
+            FlightSelectViewModel(
                 savedStateHandle = this.createSavedStateHandle(),
                 airportRepository = flightSearchApplication().container.airportRepository,
                 favoriteRepository = flightSearchApplication().container.favoriteRepository,
