@@ -1,5 +1,6 @@
 package com.alan.basictrainingflightsearch.ui
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -28,14 +29,6 @@ class FlightSelectViewModel(
     private val airportId: Int = checkNotNull(savedStateHandle[FlightSelectDestination.airportArgId])
 
     var airport by mutableStateOf(Airport(0, "", "", 0))
-    /*val airport by lazy {
-        viewModelScope.launch {
-            airportRepository
-                .getAirportStream(airportId)
-                .filterNotNull()
-                .first()
-        }
-    }*/
 
     init {
         viewModelScope.launch {
@@ -69,6 +62,32 @@ class FlightSelectViewModel(
             destinations = airports,
             favorites = favorites,
         )
+    }
+
+    suspend fun addFavorite(destination: Airport) {
+        val thisFavorite: Favorite = Favorite(
+            id = 0,
+            departureCode = airport.iataCode,
+            destinationCode = destination.iataCode
+        )
+
+        favoriteRepository.insertFavorite(thisFavorite)
+    }
+
+    suspend fun removeFavorite(favorite: Favorite) {
+        favoriteRepository.deleteFavorite(favorite = favorite)
+    }
+
+    suspend fun toggleFavorite(destination: Airport) {
+        val thisFavorite = _state.value.favorites.find { favorite: Favorite ->
+            favorite.departureCode == airport.iataCode && favorite.destinationCode == destination.iataCode
+        }
+
+        if (thisFavorite == null) {
+            addFavorite(destination = destination)
+        } else {
+            removeFavorite(favorite = thisFavorite)
+        }
     }
 }
 
