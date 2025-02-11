@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -81,11 +82,12 @@ class FlightSelectViewModel(
 
     suspend fun toggleFavorite(destination: Airport) {
         val thisFavorite = favoriteRepository
-            .getFavoriteByDepartureAndDestinationCode(departureCode = airport.iataCode, destinationCode = destination.iataCode)
+            .getFavoriteByDepartureAndDestinationCodeStream(departureCode = airport.iataCode, destinationCode = destination.iataCode)
+            .firstOrNull()
 
-        /*Log.d("TOGGLE_FAVORITE_AIRPORT", airport.toString())
+        Log.d("TOGGLE_FAVORITE_AIRPORT", airport.toString())
         Log.d("TOGGLE_FAVORITE_DESTINATION", destination.toString())
-        Log.d("TOGGLE_FAVORITE_FAVORITE", thisFavorite.toString())*/
+        Log.d("TOGGLE_FAVORITE_FAVORITE", thisFavorite.toString())
 
         if (thisFavorite == null) {
             addFavorite(destination = destination)

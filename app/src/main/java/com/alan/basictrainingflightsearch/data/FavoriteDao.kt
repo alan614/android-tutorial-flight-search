@@ -23,11 +23,15 @@ interface FavoriteDao {
     @Delete
     suspend fun delete(favorite: Favorite)
 
+    @Transaction
+    @Query(value = "DELETE FROM favorite WHERE departure_code = :departureCode AND destination_code = :destinationCode")
+    suspend fun deleteByDepartureAndArrivalCodes(departureCode: String, destinationCode: String)
+
     @Query(value = "SELECT * FROM favorite WHERE id = :id")
     fun getFavorite(id: Int): Flow<Favorite>
 
     @Query(value = "SELECT * FROM favorite where departure_code = :departureCode AND destination_code = :destinationCode")
-    suspend fun getFavoriteByDepartureAndArrivalCodes(departureCode: String, destinationCode: String): Favorite?
+    fun getFavoriteByDepartureAndArrivalCodesStream(departureCode: String, destinationCode: String): Flow<Favorite>
 
     @Query(value = "SELECT * FROM favorite")
     fun getAllFavorites(): Flow<List<Favorite>>
