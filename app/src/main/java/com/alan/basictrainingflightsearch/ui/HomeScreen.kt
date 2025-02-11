@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alan.basictrainingflightsearch.data.Airport
+import com.alan.basictrainingflightsearch.data.Favorite
 import com.alan.basictrainingflightsearch.ui.navigation.NavigationDestination
 
 object HomeDestination: NavigationDestination {
@@ -58,11 +59,16 @@ fun HomeScreen(
                     .padding(all = 8.dp),
             )
 
-
-            AirportList(
-                airports = state.airports,
-                onAirportClick = onSelectAirport
-            )
+            if (state.searchQuery.isBlank()) {
+                FavoritesList(
+                    favorites = state.favorites
+                )
+            } else {
+                AirportList(
+                    airports = state.airports,
+                    onAirportClick = onSelectAirport
+                )
+            }
         }
     }
 }
@@ -73,11 +79,10 @@ fun AirportList(
     onAirportClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    //val airports by viewModel.airports.collectAsState(emptyList())
-
     LazyColumn(
         contentPadding = PaddingValues(all = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier,
     ) {
         items (
             items = airports,
@@ -115,6 +120,28 @@ fun AirportCard(
             Text(
                 text = airport.name
             )
+        }
+    }
+}
+
+@Composable
+fun FavoritesList(
+    favorites: List<Favorite>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(all = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier,
+    ) {
+        items (
+            items = favorites,
+            key = { favorite -> favorite.id }
+        ) {
+            Column {
+                Text(text = it.departureCode)
+                Text(text = it.destinationCode)
+            }
         }
     }
 }
