@@ -59,7 +59,7 @@ class FlightSearchViewModel(
         searchTerm = terms
     }*/
 
-    val favoritesState: StateFlow<FavoritesState> = favoriteRepository
+    /*val favoritesState: StateFlow<FavoritesState> = favoriteRepository
         .getAllFavoritesStream()
         .map { FavoritesState(it) }
         .stateIn(
@@ -67,6 +67,7 @@ class FlightSearchViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = FavoritesState()
         )
+     */
 
     fun getAirport(id: Int) : Flow<Airport> = airportRepository.getAirportStream(id = id)
 
@@ -94,10 +95,10 @@ class FlightSearchViewModel(
     }
 
     fun getFavoritesWithDeparture(code: String): Flow<List<Favorite>> {
-        return favoriteRepository.getAllFavoritesByDepartureCode(code = code)
+        return favoriteRepository.getAllFavoritesByDepartureCodeStream(code = code)
     }
 
-    suspend fun addFavoriteByAirports(departureAirport: Airport, destinationAirport: Airport) {
+    private suspend fun addFavoriteByAirports(departureAirport: Airport, destinationAirport: Airport) {
         Log.d("FAVORITE_ADD", "${departureAirport.iataCode} - ${destinationAirport.iataCode}")
         //viewModelScope.launch {
             val favorite = Favorite(
@@ -109,17 +110,20 @@ class FlightSearchViewModel(
         //}
     }
 
-    suspend fun removeFavorite(favorite: Favorite) {
+    private suspend fun removeFavorite(favorite: Favorite) {
+        Log.d("FAVORITE_REMOVE", favorite.id.toString())
         //viewModelScope.launch {
             favoriteRepository.deleteFavorite(favorite)
         //}
     }
 
     suspend fun toggleFavoriteByDepartureAirport(departureAirport: Airport, destinationAirport: Airport) {
-            val favorite = favoriteRepository
-                .getFavoriteByDepartureAndDestinationCodeStream(departureCode = departureAirport.iataCode, destinationCode = destinationAirport.iataCode)
-                ?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-                ?.value
+        val favorite = favoriteRepository.getFavoriteByDepartureAndDestinationCode(departureCode = departureAirport.iataCode, destinationCode = destinationAirport.iataCode)
+
+        /*val favorite = favoriteRepository
+            .getFavoriteByDepartureAndDestinationCodeStream(departureCode = departureAirport.iataCode, destinationCode = destinationAirport.iataCode)
+            ?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+            ?.value*/
 
             if (favorite == null) {
                 addFavoriteByAirports(departureAirport = departureAirport, destinationAirport = destinationAirport)
@@ -133,9 +137,12 @@ class FlightSearchViewModel(
 data class UiState(
     //val searchTerm: String = "",
     val currentAirportId: Int = 0,
-    val favoritesList: List<Favorite> = listOf()
+    val searchTerm: String = "",
+    val airportsList: List<Airport> = emptyList(),
+    val favoritesList: List<Favorite> = emptyList(),
 )
 
+/*
 data class FavoritesState(
     val favoritesList: List<Favorite> = emptyList()
-)
+)*/

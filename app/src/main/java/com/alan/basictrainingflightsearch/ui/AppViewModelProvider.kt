@@ -1,6 +1,7 @@
 package com.alan.basictrainingflightsearch.ui
 
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -12,6 +13,12 @@ object AppViewModelProvider {
             FlightSearchViewModel(
                 flightSearchApplication().container.airportRepository,
                 flightSearchApplication().container.favoriteRepository,
+            )
+
+            HomeViewModel(
+                savedStateHandle = this.createSavedStateHandle(),
+                airportRepository = flightSearchApplication().container.airportRepository,
+                favoriteRepository = flightSearchApplication().container.favoriteRepository,
             )
         }
     }

@@ -57,6 +57,7 @@ fun FlightSearchScreen() {
     }
 }*/
 
+/*
 @Composable
 fun FlightSearchBody(
     onAirportClick: (Int) -> Unit,
@@ -67,7 +68,7 @@ fun FlightSearchBody(
     val searchTerm by viewModel.searchTerm.collectAsState()
     val airports by viewModel.airports.collectAsState(emptyList())
     //val favorites by viewModel.favorites.collectAsState(emptyList())
-    val favoritesState by viewModel.favoritesState.collectAsState()
+    //val favoritesState by viewModel.favoritesState.collectAsState()
 
     Column(
         modifier = modifier
@@ -89,7 +90,8 @@ fun FlightSearchBody(
                 .padding(all = 8.dp),
         )
 
-        /*if (searchTerm != "") {
+        */
+/*if (searchTerm != "") {
             AirportList(
                 viewModel = viewModel,
                 onAirportClick = onAirportClick,
@@ -98,10 +100,12 @@ fun FlightSearchBody(
             FavoriteList(
                 viewModel = viewModel,
             )
-        }*/
+        }*//*
+
 
         if (searchTerm == "") {
-            Text("listing favorites")
+            */
+/*Text("listing favorites")
             LazyColumn {
                 items (
                     items = favoritesState.favoritesList,
@@ -112,9 +116,11 @@ fun FlightSearchBody(
                         Text(text = "${favorite.departureCode} - ${favorite.destinationCode}")
                     //}
                 }
-            }
+            }*//*
+
         } else {
-            /*LazyColumn(
+            */
+/*LazyColumn(
                 contentPadding = PaddingValues(all = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -127,7 +133,8 @@ fun FlightSearchBody(
                         onAirportClick = onAirportClick
                     )
                 }
-            }*/
+            }*//*
+
             AirportList(
                 airports = airports,
                 onAirportClick = onAirportClick
@@ -135,8 +142,9 @@ fun FlightSearchBody(
         }
     }
 }
+*/
 
-@Composable
+/*@Composable
 fun AirportList(
     airports: List<Airport>,
     onAirportClick: (Int) -> Unit,
@@ -185,14 +193,14 @@ fun AirportCard(
                 text = airport.name
             )
         }
-        /*Card(
+        *//*Card(
             shape = ShapeDefaults.ExtraLarge,
             modifier = Modifier.fillMaxSize()
         ) {
             Text(text = airport.name)
-        }*/
+        }*//*
     }
-}
+}*/
 /*
 
 @Composable

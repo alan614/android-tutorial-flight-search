@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.Flow
 interface FavoriteRepository {
     fun getFavoriteStream(id: Int): Flow<Favorite>
 
-    fun getFavoriteByDepartureAndDestinationCodeStream(departureCode: String, destinationCode: String): Flow<Favorite>?
-
     fun getAllFavoritesStream(): Flow<List<Favorite>>
 
-    fun getAllFavoritesByDepartureCode(code: String): Flow<List<Favorite>>
+    fun getAllFavoritesByDepartureCodeStream(code: String): Flow<List<Favorite>>
 
-    fun getAllFavoritesByArrivalCode(code: String): Flow<List<Favorite>>
+    fun getAllFavoritesByArrivalCodeStream(code: String): Flow<List<Favorite>>
+
+    suspend fun getFavoriteByDepartureAndDestinationCode(departureCode: String, destinationCode: String): Favorite?
 
     suspend fun insertFavorite(favorite: Favorite)
 
