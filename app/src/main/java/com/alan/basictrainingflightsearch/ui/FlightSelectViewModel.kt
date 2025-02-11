@@ -1,5 +1,6 @@
 package com.alan.basictrainingflightsearch.ui
 
+import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,9 +80,12 @@ class FlightSelectViewModel(
     }
 
     suspend fun toggleFavorite(destination: Airport) {
-        val thisFavorite = _state.value.favorites.find { favorite: Favorite ->
-            favorite.departureCode == airport.iataCode && favorite.destinationCode == destination.iataCode
-        }
+        val thisFavorite = favoriteRepository
+            .getFavoriteByDepartureAndDestinationCode(departureCode = airport.iataCode, destinationCode = destination.iataCode)
+
+        /*Log.d("TOGGLE_FAVORITE_AIRPORT", airport.toString())
+        Log.d("TOGGLE_FAVORITE_DESTINATION", destination.toString())
+        Log.d("TOGGLE_FAVORITE_FAVORITE", thisFavorite.toString())*/
 
         if (thisFavorite == null) {
             addFavorite(destination = destination)
