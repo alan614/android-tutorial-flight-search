@@ -1,6 +1,5 @@
 package com.alan.basictrainingflightsearch.ui.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -8,10 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.alan.basictrainingflightsearch.ui.FlightSelectDestination
-import com.alan.basictrainingflightsearch.ui.FlightSelectScreen
-import com.alan.basictrainingflightsearch.ui.HomeDestination
-import com.alan.basictrainingflightsearch.ui.HomeScreen
+import com.alan.basictrainingflightsearch.ui.select.FlightSelectDestination
+import com.alan.basictrainingflightsearch.ui.select.FlightSelectScreen
+import com.alan.basictrainingflightsearch.ui.home.HomeDestination
+import com.alan.basictrainingflightsearch.ui.home.HomeScreen
 
 @Composable
 fun FlightNavGraph(
@@ -35,7 +34,7 @@ fun FlightNavGraph(
         composable(
             route = FlightSelectDestination.routeWithArgs,
             arguments = listOf(navArgument(name = FlightSelectDestination.airportArgId) {
-                type = NavType.IntType
+                type = NavType.StringType
             })
         ) {
             FlightSelectScreen()

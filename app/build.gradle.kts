@@ -38,6 +38,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+        freeCompilerArgs = listOf("-Xdebug")
     }
     buildFeatures {
         compose = true

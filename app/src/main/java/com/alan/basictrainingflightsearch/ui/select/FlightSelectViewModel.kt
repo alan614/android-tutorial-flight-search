@@ -1,7 +1,6 @@
-package com.alan.basictrainingflightsearch.ui
+package com.alan.basictrainingflightsearch.ui.select
 
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -28,21 +26,12 @@ class FlightSelectViewModel(
     private val favoriteRepository: FavoriteRepository
 ): ViewModel() {
 
-    private val airportId: Int = checkNotNull(savedStateHandle[FlightSelectDestination.airportArgId])
+    private val airportCode: String = checkNotNull(savedStateHandle[FlightSelectDestination.airportArgId])
 
     var airport by mutableStateOf(Airport(0, "", "", 0))
 
-    init {
-        viewModelScope.launch {
-            airport = airportRepository
-                .getAirportStream(airportId)
-                .filterNotNull()
-                .first()
-        }
-    }
-
     private val _favorites = favoriteRepository
-        .getAllFavoritesStream()
+        .getAllFavoritesByDepartureCodeStream(code = airportCode)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000L),
@@ -50,7 +39,7 @@ class FlightSelectViewModel(
         )
 
     private val _airports = airportRepository
-        .getAllAirportsExceptStream(exceptAirportId = airportId)
+        .getAllAirportsExceptByCodeStream(exceptAirportCode = airportCode)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000L),
@@ -66,8 +55,17 @@ class FlightSelectViewModel(
         )
     }
 
+    init {
+        viewModelScope.launch {
+            airport = airportRepository
+                .getAirportByCodeStream(airportCode)
+                .filterNotNull()
+                .first()
+        }
+    }
+
     suspend fun addFavorite(destination: Airport) {
-        val thisFavorite: Favorite = Favorite(
+        val thisFavorite = Favorite(
             id = 0,
             departureCode = airport.iataCode,
             destinationCode = destination.iataCode
@@ -80,19 +78,34 @@ class FlightSelectViewModel(
         favoriteRepository.deleteFavorite(favorite = favorite)
     }
 
-    suspend fun toggleFavorite(destination: Airport) {
-        val thisFavorite = favoriteRepository
-            .getFavoriteByDepartureAndDestinationCodeStream(departureCode = airport.iataCode, destinationCode = destination.iataCode)
-            .firstOrNull()
+    fun toggleFavorite(destination: Airport) {
+        viewModelScope.launch {
+            /*val thisFavorite = favoriteRepository
+                .getFavoriteByDepartureAndDestinationCodeStream(departureCode = airport.iataCode, destinationCode = destination.iataCode)
+                .firstOrNull()*/
 
-        Log.d("TOGGLE_FAVORITE_AIRPORT", airport.toString())
-        Log.d("TOGGLE_FAVORITE_DESTINATION", destination.toString())
-        Log.d("TOGGLE_FAVORITE_FAVORITE", thisFavorite.toString())
+            val targetFavorite = _favorites.value.find {
+               it.destinationCode == destination.iataCode
+            }
 
-        if (thisFavorite == null) {
-            addFavorite(destination = destination)
-        } else {
-            removeFavorite(favorite = thisFavorite)
+            Log.d("TOGGLE_FAVORITE_AIRPORT", airport.toString())
+            Log.d("TOGGLE_FAVORITE_DESTINATION", destination.toString())
+            Log.d("TOGGLE_FAVORITE_FAVORITE", targetFavorite.toString())
+
+            if (targetFavorite == null) {
+                addFavorite(destination = destination)
+            } else {
+                //removeFavorite(favorite = targetFavorite)
+                favoriteRepository.deleteByDepartureAndArrivalCodes(departureCode = airportCode, destinationCode = destination.iataCode)
+            }
+
+            /*_state.update {
+                _state.value.copy(
+                    favorites = favoriteRepository
+                        .getAllFavoritesByDepartureCodeStream(code = airportCode)
+                        .first()
+                )
+            }*/
         }
     }
 }

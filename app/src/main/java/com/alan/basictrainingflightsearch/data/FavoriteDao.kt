@@ -11,19 +11,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FavoriteDao {
-    @Transaction
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(favorite: Favorite)
 
-    @Transaction
     @Update
     suspend fun update(favorite: Favorite)
 
-    @Transaction
     @Delete
     suspend fun delete(favorite: Favorite)
 
-    @Transaction
     @Query(value = "DELETE FROM favorite WHERE departure_code = :departureCode AND destination_code = :destinationCode")
     suspend fun deleteByDepartureAndArrivalCodes(departureCode: String, destinationCode: String)
 

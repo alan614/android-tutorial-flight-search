@@ -1,4 +1,4 @@
-package com.alan.basictrainingflightsearch.ui
+package com.alan.basictrainingflightsearch.ui.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -23,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alan.basictrainingflightsearch.data.Airport
 import com.alan.basictrainingflightsearch.data.Favorite
+import com.alan.basictrainingflightsearch.ui.AppViewModelProvider
+import com.alan.basictrainingflightsearch.ui.FlightTopBar
 import com.alan.basictrainingflightsearch.ui.navigation.NavigationDestination
 
 object HomeDestination: NavigationDestination {
@@ -32,7 +33,7 @@ object HomeDestination: NavigationDestination {
 
 @Composable
 fun HomeScreen(
-    onSelectAirport: (Int) -> Unit,
+    onSelectAirport: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.factory)
 ) {
@@ -76,7 +77,7 @@ fun HomeScreen(
 @Composable
 fun AirportList(
     airports: List<Airport>,
-    onAirportClick: (Int) -> Unit,
+    onAirportClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -99,14 +100,14 @@ fun AirportList(
 @Composable
 fun AirportCard(
     airport: Airport,
-    onAirportClick: (Int) -> Unit,
+    onAirportClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-                onAirportClick(airport.id)
+                onAirportClick(airport.iataCode)
             }
     ) {
         Column(
@@ -129,19 +130,24 @@ fun FavoritesList(
     favorites: List<Favorite>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(all = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier,
-    ) {
-        items (
-            items = favorites,
-            key = { favorite -> favorite.id }
+    if (favorites.isEmpty()) {
+        Text(text = "No Favorites found")
+    } else {
+        LazyColumn(
+            contentPadding = PaddingValues(all = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier,
         ) {
-            Column {
-                Text(text = it.departureCode)
-                Text(text = it.destinationCode)
+            items (
+                items = favorites,
+                key = { favorite -> favorite.id }
+            ) {
+                Column {
+                    Text(text = it.departureCode)
+                    Text(text = it.destinationCode)
+                }
             }
         }
     }
+
 }

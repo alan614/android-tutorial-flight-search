@@ -1,4 +1,4 @@
-package com.alan.basictrainingflightsearch.ui
+package com.alan.basictrainingflightsearch.ui.select
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,14 +30,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alan.basictrainingflightsearch.data.Airport
+import com.alan.basictrainingflightsearch.ui.AppViewModelProvider
+import com.alan.basictrainingflightsearch.ui.FlightTopBar
 import com.alan.basictrainingflightsearch.ui.navigation.NavigationDestination
 import com.alan.basictrainingflightsearch.ui.theme.BasicTrainingFlightSearchTheme
-import kotlinx.coroutines.launch
 
 object FlightSelectDestination: NavigationDestination {
     override val route: String = "flight_select"
     override val title: String = "Select Flight"
-    const val airportArgId: String = "airportId"
+    const val airportArgId: String = "airportCode"
     val routeWithArgs: String = "$route/{$airportArgId}"
 }
 
@@ -51,7 +51,8 @@ fun FlightSelectScreen(
     val state by viewModel.state.collectAsState(initial = FlightSelectUiState())
     val airport = viewModel.airport
 
-    val coroutineScope = rememberCoroutineScope()
+    //val state by viewModel.state.collectAsState(initial = FlightSelectViewModelAlternateUiState())
+    //val airport = state.airport
 
     Scaffold(
         topBar = {
@@ -83,11 +84,12 @@ fun FlightSelectScreen(
                         airportDeparture = airport,
                         airportDestination = destination,
                         onFlightClick = {
-                            coroutineScope.launch {
-                                viewModel.toggleFavorite(
+                            viewModel.toggleFavorite(destination = destination)
+                            //coroutineScope.launch {
+                                /*viewModel.toggleFavorite(
                                     destination = destination
-                                )
-                            }
+                                )*/
+                            //}
                         },
                         isFavorite = (state.favorites.find { favorite -> favorite.departureCode == airport.iataCode && favorite.destinationCode == destination.iataCode } != null)
                     )
