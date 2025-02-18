@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.alan.basictrainingflightsearch.data.Airport
 import com.alan.basictrainingflightsearch.data.AirportRepository
 import com.alan.basictrainingflightsearch.data.Favorite
+import com.alan.basictrainingflightsearch.data.FavoriteFlight
 import com.alan.basictrainingflightsearch.data.FavoriteRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -47,7 +48,7 @@ class HomeViewModel(
         )
 
     private val _favorites = favoriteRepository
-        .getAllFavoritesStream()
+        .getAllFavoriteFlightsStream()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
@@ -74,5 +75,5 @@ class HomeViewModel(
 data class HomeUiState(
     val searchQuery: String = "",
     val airports: List<Airport> = emptyList(),
-    val favorites: List<Favorite> = emptyList(),
+    val favorites: List<FavoriteFlight> = emptyList(),
 )

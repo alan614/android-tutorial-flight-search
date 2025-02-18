@@ -13,6 +13,10 @@ interface FavoriteRepository {
 
     fun getFavoriteByDepartureAndDestinationCodeStream(departureCode: String, destinationCode: String): Flow<Favorite>
 
+    fun getFavoriteFlightStream(id: Int): Flow<FavoriteFlight>
+
+    fun getAllFavoriteFlightsStream(): Flow<List<FavoriteFlight>>
+
     suspend fun insertFavorite(favorite: Favorite)
 
     suspend fun updateFavorite(favorite: Favorite)

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alan.basictrainingflightsearch.data.Airport
 import com.alan.basictrainingflightsearch.data.Favorite
+import com.alan.basictrainingflightsearch.data.FavoriteFlight
 import com.alan.basictrainingflightsearch.ui.AppViewModelProvider
 import com.alan.basictrainingflightsearch.ui.FlightTopBar
 import com.alan.basictrainingflightsearch.ui.navigation.NavigationDestination
@@ -127,7 +128,7 @@ fun AirportCard(
 
 @Composable
 fun FavoritesList(
-    favorites: List<Favorite>,
+    favorites: List<FavoriteFlight>,
     modifier: Modifier = Modifier
 ) {
     if (favorites.isEmpty()) {
@@ -143,8 +144,8 @@ fun FavoritesList(
                 key = { favorite -> favorite.id }
             ) {
                 Column {
-                    Text(text = it.departureCode)
-                    Text(text = it.destinationCode)
+                    Text(text = it.departureName)
+                    Text(text = it.destinationName)
                 }
             }
         }

@@ -10,6 +10,10 @@ class OfflineFavoriteRepository(private val favoriteDao: FavoriteDao): FavoriteR
         destinationCode: String
     ): Flow<Favorite> = favoriteDao.getFavoriteByDepartureAndArrivalCodesStream(departureCode = departureCode, destinationCode = destinationCode)
 
+    override fun getFavoriteFlightStream(id: Int): Flow<FavoriteFlight> = favoriteDao.getFavoriteFlight(id = id)
+
+    override fun getAllFavoriteFlightsStream(): Flow<List<FavoriteFlight>> = favoriteDao.getAllFavoriteFlights()
+
     override fun getAllFavoritesStream(): Flow<List<Favorite>> = favoriteDao.getAllFavorites()
 
     override fun getAllFavoritesByDepartureCodeStream(code: String): Flow<List<Favorite>> = favoriteDao.getFavoritesByDepartureCode(code = code)
