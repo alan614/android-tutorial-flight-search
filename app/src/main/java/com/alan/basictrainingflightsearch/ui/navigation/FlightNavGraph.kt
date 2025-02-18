@@ -37,7 +37,9 @@ fun FlightNavGraph(
                 type = NavType.StringType
             })
         ) {
-            FlightSelectScreen()
+            FlightSelectScreen(
+                backAction = { navController.navigateUp() }
+            )
         }
     }
 }

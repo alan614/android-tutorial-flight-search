@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FlightSelectViewModel(
@@ -61,6 +62,12 @@ class FlightSelectViewModel(
                 .getAirportByCodeStream(airportCode)
                 .filterNotNull()
                 .first()
+
+            _state.update {
+                it.copy(
+                    airport = airport
+                )
+            }
         }
     }
 
@@ -98,20 +105,12 @@ class FlightSelectViewModel(
                 //removeFavorite(favorite = targetFavorite)
                 favoriteRepository.deleteByDepartureAndArrivalCodes(departureCode = airportCode, destinationCode = destination.iataCode)
             }
-
-            /*_state.update {
-                _state.value.copy(
-                    favorites = favoriteRepository
-                        .getAllFavoritesByDepartureCodeStream(code = airportCode)
-                        .first()
-                )
-            }*/
         }
     }
 }
 
 data class FlightSelectUiState(
-    //val airport: Airport = Airport(id = 0, iataCode = "",name = "",passengers = 0),
+    val airport: Airport = Airport(id = 0, iataCode = "",name = "",passengers = 0),
     val destinations: List<Airport> = emptyList(),
     val favorites: List<Favorite> = emptyList(),
 )

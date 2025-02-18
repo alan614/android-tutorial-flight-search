@@ -24,7 +24,7 @@ abstract class FlightSearchDatabase: RoomDatabase() {
                     klass = FlightSearchDatabase::class.java,
                     name = "flights"
                 )
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration() //TODO: remove this when done with development
                     .createFromAsset("database/flight_search.db")
                     .build().also { Instance = it }
             }

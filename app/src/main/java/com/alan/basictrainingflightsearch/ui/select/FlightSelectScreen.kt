@@ -44,19 +44,23 @@ object FlightSelectDestination: NavigationDestination {
 
 @Composable
 fun FlightSelectScreen(
+    backAction: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FlightSelectViewModel = viewModel(factory = AppViewModelProvider.factory)
 ) {
 
     val state by viewModel.state.collectAsState(initial = FlightSelectUiState())
-    val airport = viewModel.airport
+    //val airport = viewModel.airport
 
     //val state by viewModel.state.collectAsState(initial = FlightSelectViewModelAlternateUiState())
     //val airport = state.airport
 
     Scaffold(
         topBar = {
-            FlightTopBar()
+            FlightTopBar(
+                hasBackButton = true,
+                navigateBack = backAction
+            )
         }
     ) {innerPadding ->
         Column(
@@ -81,7 +85,7 @@ fun FlightSelectScreen(
                     key = { airport -> airport.id }
                 ) { destination ->
                     FlightCard(
-                        airportDeparture = airport,
+                        airportDeparture = state.airport,
                         airportDestination = destination,
                         onFlightClick = {
                             viewModel.toggleFavorite(destination = destination)
@@ -91,7 +95,7 @@ fun FlightSelectScreen(
                                 )*/
                             //}
                         },
-                        isFavorite = (state.favorites.find { favorite -> favorite.departureCode == airport.iataCode && favorite.destinationCode == destination.iataCode } != null)
+                        isFavorite = (state.favorites.find { favorite -> favorite.departureCode == state.airport.iataCode && favorite.destinationCode == destination.iataCode } != null)
                     )
                 }
             }
@@ -159,6 +163,7 @@ fun FlightCard(
 
             Icon(
                 imageVector = if (isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
+                tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "Mark as favorite",
                 modifier = Modifier.height(64.dp).width(64.dp),
             )
