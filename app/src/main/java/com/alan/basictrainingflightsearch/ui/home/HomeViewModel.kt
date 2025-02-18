@@ -8,6 +8,7 @@ import com.alan.basictrainingflightsearch.data.AirportRepository
 import com.alan.basictrainingflightsearch.data.Favorite
 import com.alan.basictrainingflightsearch.data.FavoriteFlight
 import com.alan.basictrainingflightsearch.data.FavoriteRepository
+import com.alan.basictrainingflightsearch.data.toFavorite
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class HomeViewModel(
     savedStateHandle: SavedStateHandle,
@@ -69,6 +71,12 @@ class HomeViewModel(
         _searchQuery.update {
             searchQuery
         };
+    }
+
+    fun removeFlight(favoriteFlight: FavoriteFlight) {
+        viewModelScope.launch {
+            favoriteRepository.deleteFavorite(favoriteFlight.toFavorite())
+        }
     }
 }
 

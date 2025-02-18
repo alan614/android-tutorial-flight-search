@@ -9,3 +9,9 @@ data class FavoriteFlight(
     val destinationName: String,
     val destinationCode: String,
 )
+
+fun FavoriteFlight.toFavorite(): Favorite = Favorite(
+    id = id,
+    departureCode = departureCode,
+    destinationCode = destinationCode
+)

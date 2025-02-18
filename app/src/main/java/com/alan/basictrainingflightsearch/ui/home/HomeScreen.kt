@@ -74,7 +74,8 @@ fun HomeScreen(
 
             if (state.searchQuery.isBlank()) {
                 FavoritesList(
-                    favoriteFlights = state.favorites
+                    favoriteFlights = state.favorites,
+                    removeFavorite = { viewModel.removeFlight(it) }
                 )
             } else {
                 AirportList(
@@ -150,6 +151,7 @@ fun AirportCard(
 @Composable
 fun FavoritesList(
     favoriteFlights: List<FavoriteFlight>,
+    removeFavorite: (FavoriteFlight) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (favoriteFlights.isEmpty()) {
@@ -165,7 +167,8 @@ fun FavoritesList(
                 key = { favorite -> favorite.id }
             ) {
                 FavoriteFlightCard(
-                    favoriteFlight = it
+                    favoriteFlight = it,
+                    removeFavorite = removeFavorite
                 )
             }
         }
@@ -175,12 +178,16 @@ fun FavoritesList(
 @Composable
 fun FavoriteFlightCard(
     favoriteFlight: FavoriteFlight,
+    removeFavorite: (FavoriteFlight) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().clickable {
-            //add code to delete favorite
-        }
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                //add code to delete favorite
+                removeFavorite(favoriteFlight)
+            }
     ) {
         Row (
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -231,7 +238,9 @@ fun FavoriteFlightCard(
                 imageVector = Icons.Outlined.Favorite,
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "Mark as favorite",
-                modifier = Modifier.height(64.dp).width(64.dp),
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(64.dp),
             )
         }
     }
