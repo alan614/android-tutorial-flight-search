@@ -168,7 +168,12 @@ fun FavoritesList(
     modifier: Modifier = Modifier
 ) {
     if (favoriteFlights.isEmpty()) {
-        Text(text = "No Favorites found")
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "No Favorites found")
+        }
     } else {
         LazyColumn(
             contentPadding = PaddingValues(all = 16.dp),
