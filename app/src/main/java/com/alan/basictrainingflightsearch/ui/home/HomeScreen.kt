@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
@@ -65,6 +67,17 @@ fun HomeScreen(
                 value = state.searchQuery,
                 onValueChange = {
                     viewModel.updateSearchQuery(it)
+                },
+                trailingIcon = {
+                    if (state.searchQuery.isNotBlank()) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Clear box",
+                            modifier = Modifier.clickable {
+                                viewModel.updateSearchQuery("")
+                            }
+                        )
+                    }
                 },
                 label = { Text("Search for flight name") },
                 modifier = Modifier
