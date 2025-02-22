@@ -14,6 +14,7 @@ abstract class FlightSearchDatabase: RoomDatabase() {
     abstract fun favoriteDao(): FavoriteDao
 
     companion object {
+        @Volatile
         private var Instance: FlightSearchDatabase? = null
 
         fun getDatabase(context: Context): FlightSearchDatabase {
@@ -23,9 +24,9 @@ abstract class FlightSearchDatabase: RoomDatabase() {
                     klass = FlightSearchDatabase::class.java,
                     name = "flights"
                 )
-                    .fallbackToDestructiveMigration()
+                    //.fallbackToDestructiveMigration() //TODO: remove this when done with development
                     .createFromAsset("database/flight_search.db")
-                    .build()
+                    .build().also { Instance = it }
             }
         }
     }
