@@ -1,4 +1,4 @@
-#Android-Kotlin Flight Search Codelab Project
+# Android-Kotlin Flight Search Codelab Project
 
 The App uses Room database to maintain a list of airports. A departure airport is searchable using parts of its airport code or name, when selected will then list all available flights. Searching for the departure airport as well as saving the favorites is reactive via StateFlows
 
