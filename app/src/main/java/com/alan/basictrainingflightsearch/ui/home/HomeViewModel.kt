@@ -1,6 +1,7 @@
 package com.alan.basictrainingflightsearch.ui.home
 
 import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,11 +19,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class HomeViewModel(
     //savedStateHandle: SavedStateHandle,
@@ -34,11 +37,17 @@ class HomeViewModel(
     private val _searchQuery = MutableStateFlow("")
 
     init {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             userPreferencesRepository.keywords.collectLatest { keyword ->
                 _searchQuery.update {
                     keyword
                 }
+            }
+        }*/
+
+        runBlocking {
+            _searchQuery.update {
+                userPreferencesRepository.keywords.first()
             }
         }
     }
