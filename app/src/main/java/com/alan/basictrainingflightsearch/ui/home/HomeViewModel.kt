@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class HomeViewModel(
     //savedStateHandle: SavedStateHandle,
     private val airportRepository: AirportRepository,
@@ -50,9 +51,15 @@ class HomeViewModel(
                 userPreferencesRepository.keywords.first()
             }
         }
+
+        viewModelScope.launch {
+            _searchQuery.debounce(1_000L).collectLatest {
+                userPreferencesRepository.saveKeywordsPreferences(it)
+            }
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+
     private val _airports = _searchQuery
         .debounce(timeoutMillis = 1_000L)
         .flatMapLatest {
@@ -93,10 +100,6 @@ class HomeViewModel(
     fun updateSearchQuery(searchQuery: String) {
         _searchQuery.update {
             searchQuery
-        };
-
-        viewModelScope.launch {
-            userPreferencesRepository.saveKeywordsPreferences(searchQuery)
         }
     }
 
